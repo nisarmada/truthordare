@@ -21,6 +21,10 @@ body {
 	overflow: hidden;                   /* Hide anything outside container */
   }
   
+  .slideshow-container.hidden {
+    display: none;
+}
+
   /* ===== INDIVIDUAL SLIDES ===== */
   .slide {
 	position: absolute;
