@@ -1,57 +1,198 @@
+/* ===== BASE STYLES ===== */
 body {
-	text-align: center;
-	font-family: Arial, Helvetica, sans-serif;
-	background-color: black;
+	font-family: 'Fredoka One', cursive; /* Playful custom font */
+	background: #FF6B6B;                /* Vibrant pink-red background */
+	color: white;                       /* White text for contrast */
+	margin: 0;                          /* Remove default browser spacing */
+	overflow-x: hidden;                 /* Prevent horizontal scroll */
+  }
+  
+  .main-container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
 }
 
-.card-container {
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	height: 300px;
-	width: 200px;
-	margin: 50px auto;
-	perspective: 1000px; /*for 3D flipping effect */
-}
-
-.card {
-	width: 100%;
-	height: 100%;
-	background-color: white;
-	border-radius: 10px;
-	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-	display: flex;
-	justify-content: center;
-	font-size: 20px;
-	font-weight: bold;
-	cursor: pointer;
+  /* ===== SLIDESHOW CONTAINER ===== */
+  .slideshow-container {
 	position: relative;
-	transform-style: preserve-3d;
-	transition: transform 0.6s;
-}
-
-.card-front, .card-back {
-	position:absolute;
+	width: 100vw;                      /* Full viewport width */
+	height: 100vh;                     /* Full viewport height */
+	overflow: hidden;                   /* Hide anything outside container */
+  }
+  
+  /* ===== INDIVIDUAL SLIDES ===== */
+  .slide {
+	position: absolute;
 	width: 100%;
 	height: 100%;
-	backface-visibility: hidden;
+	display: flex;                      /* Flexbox for easy centering */
+	flex-direction: column;             /* Stack children vertically */
+	justify-content: center;            /* Center vertically */
+	align-items: center;                /* Center horizontally */
+	text-align: center;
+	padding: 20px;
+	box-sizing: border-box;             /* Include padding in width/height */
+	opacity: 0;                         /* Start invisible */
+	transition: opacity 0.5s ease;      /* Fade animation */
+  }
+  
+  .slide.active {
+	opacity: 1;                         /* Show active slide */
+  }
+  
+  /* Slide headings */
+  .slide h1 {
+	font-size: 2.5rem;                  /* Large, attention-grabbing */
+	margin-bottom: 30px;
+	text-shadow: 2px 2px 4px rgba(0,0,0,0.3); /* Subtle 3D effect */
+  }
+  
+  /* Content boxes */
+  .slide-content {
+	background: rgba(255,255,255,0.2);  /* Semi-transparent white */
+	padding: 30px;
+	border-radius: 20px;                /* Soft rounded corners */
+	max-width: 80%;                     /* Prevent overly wide text */
+	box-shadow: 0 8px 16px rgba(0,0,0,0.2); /* Floating effect */
+  }
+  
+  /* Icons */
+  .slide-icon {
+	width: 100px;
+	height: 100px;
+	margin: 20px 0;
+	filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2)); /* Match box shadow */
+  }
+  
+  /* ===== START BUTTON ===== */
+  #start-game {
+	background: #4CAF50;                /* Fresh green */
+	border: none;
+	color: white;
+	padding: 15px 30px;
+	font-size: 1.2rem;
+	border-radius: 50px;                /* Pill shape */
+	cursor: pointer;
+	font-family: 'Fredoka One';         /* Match heading font */
+	margin-top: 20px;
+	box-shadow: 0 4px 8px rgba(0,0,0,0.2); /* Pressable look */
+	transition: background 0.3s ease;   /* Smooth color change */
+  }
+  
+  #start-game:hover {
+	background: #45a049;                /* Darker green on hover */
+	transform: translateY(-2px);       /* Slight lift effect */
+	box-shadow: 0 6px 12px rgba(0,0,0,0.3); /* Enhanced shadow */
+  }
+  
+  /* ===== NAVIGATION DOTS ===== */
+  .dots-container {
+	position: absolute;
+	bottom: 30px;
+	width: 100%;
+	text-align: center;
+  }
+  
+  .dot {
+	cursor: pointer;
+	height: 15px;
+	width: 15px;
+	margin: 0 5px;
+	background-color: rgba(255,255,255,0.5); /* Semi-transparent */
+	border-radius: 50%;                 /* Perfect circle */
+	display: inline-block;
+	transition: all 0.3s ease;          /* Smooth state changes */
+  }
+  
+  .dot.active {
+	background-color: white;            /* Solid white for active */
+	transform: scale(1.2);             /* Slightly larger */
+  }
+  
+  /* ===== NAVIGATION ARROWS ===== */
+  .prev, .next {
+	cursor: pointer;
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);        /* Perfect vertical centering */
+	width: auto;
+	padding: 16px;
+	color: white;
+	font-weight: bold;
+	font-size: 24px;
+	user-select: none;                  /* Prevent text selection */
+	text-shadow: 0 2px 4px rgba(0,0,0,0.5); /* Readable on any background */
+	transition: opacity 0.3s ease;
+  }
+  
+  .prev { left: 20px; }
+  .next { right: 20px; }
+  
+  .prev:hover, .next:hover {
+	opacity: 0.8;                       /* Slight fade on hover */
+  }
+  
+  /* ===== GAME CONTAINER ===== */
+  .game-container {
+    display: flex;                      /* Use flex to center content */
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    height: 100vh;
+    width: 100vw;
+    box-sizing: border-box;
+}
+
+.game-container.hidden {
+    display: none;
+}
+  
+  /* ===== CARD STYLES ===== */
+  .card-container {
+	perspective: 1000px;                /* Enable 3D space */
+	margin: 40px auto;
+	width: 300px;
+	height: 400px;
+  }
+  
+  .card {
+	width: 100%;
+	height: 100%;
+	position: relative;
+	transform-style: preserve-3d;       /* Child elements in 3D */
+	transition: transform 0.6s ease;    /* Smooth flip */
+	cursor: pointer;
+  }
+  
+  .card-front, .card-back {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	backface-visibility: hidden;        /* Hide back face when flipped */
 	display: flex;
-	justify-content: center;
 	align-items: center;
-	border-radius: 10px;
-}
-
-.card-front {
-    background-color: white;
-    color: black;
-}
-
-.card-back {
-    background-color: #f8f8f8;
-    color: black;
-    transform: rotateY(180deg);
-}
-
-.card-flipped {
-	transform: rotateY(180deg);
-}
+	justify-content: center;
+	border-radius: 15px;
+	padding: 20px;
+	box-sizing: border-box;
+	font-size: 1.5rem;
+	text-align: center;
+	box-shadow: 0 10px 20px rgba(0,0,0,0.2); /* Depth effect */
+  }
+  
+  .card-front {
+	background: #FFD166;                /* Sunny yellow */
+	color: #333;                        /* Dark text for contrast */
+  }
+  
+  .card-back {
+	background: #06D6A0;                /* Teal green */
+	color: white;
+	transform: rotateY(180deg);         /* Start flipped */
+  }
+  
+  .card-flipped {
+	transform: rotateY(180deg);         /* Flip state */
+  }

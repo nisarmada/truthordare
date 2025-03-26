@@ -1,23 +1,91 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="UTF-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<title>Truth or Dare</title>
-		<link rel="stylesheet" href="style.css">
-	</head>
-	<body>
-		<h1>Truth or Dare</h1>
-		<div class="card-container" onclick="pickCard()">
-			<div class="card" id="card">
-				<div class="card-front">
-				<p id="front-result">Draw a Card</p>
-			</div>
-		<div class="card-back">
-			<p id="back-result"></p>
-		</div>
-		</div>
-	</div>
-		<script src="script.js"></script>
-	</body>
+<head>
+    <!-- Character encoding and responsive viewport -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Truth or Dare</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Main container that holds both sections -->
+    <div class="main-container">
+        <!-- Slideshow Container -->
+        <div class="slideshow-container">
+            <!-- Slide 1: Welcome screen -->
+            <div class="slide fade active">
+                <h1>Welcome to the Truth or Dare Game</h1>
+                <div class="slide-content">
+                    <p>The Ultimate Game for Couples</p>
+                    <img src="https://cdn-icons-png.flaticon.com/512/3048/3048127.png" alt="Game icon" class="slide-icon">
+                </div>
+            </div>
+
+            <!-- Slide 2: Instructions -->
+            <div class="slide fade">
+                <h1>How to Play</h1>
+                <div class="slide-content">
+                    <p>1. Tap the Card to Draw</p>
+                    <p>2. Read it aloud</p>
+                    <p>3. Answer the question or Complete the Challenge!</p>
+                    <img src="https://cdn-icons-png.flaticon.com/512/3595/3595458.png" alt="Instructions icon">
+                </div>
+            </div>
+
+            <!-- Slide 3: Card Examples -->
+            <div class="slide fade">
+                <h1>Example Cards</h1>
+                <div class="slide-content">
+                    <p>Answer honestly or Drink!</p>
+                    <p>Examples:</p>
+                    <ul>
+                        <li>"What's your biggest secret?"</li>
+                        <li>"Who do you have a crush on?"</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Slide 4: Call-to-Action -->
+            <div class="slide fade">
+                <h1>Ready to Play?</h1>
+                <div class="slide-content">
+                    <p>Get comfortable with your partner and tap Start!</p>
+                    <button id="start-game">START GAME</button>
+                </div>
+            </div>
+
+            <!-- Navigation Dots -->
+            <div class="dots-container">
+                <span class="dot active"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+            </div>
+
+            <!-- Navigation Arrows -->
+            <a class="prev">❮</a>
+            <a class="next">❯</a>
+        </div>
+
+        <!-- Game container (Hidden initially) -->
+        <div class="game-container hidden">
+            <h1>Truth or Dare</h1>
+            <div class="card-container" onclick="pickCard()">
+                <div class="card" id="card">
+                    <div class="card-front">
+                        <p id="front-result">Draw a Card</p>
+                    </div>
+                    <div class="card-back">
+                        <p id="back-result"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
 </html>
