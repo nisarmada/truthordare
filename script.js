@@ -92,10 +92,10 @@ const dares = [
 
 //start game button
 document.getElementById('start-game').addEventListener('click', () => {
-	// //hide slideshow
-	// document.querySelector('.slideshow-container').classList.add('hidden');
-	// //show game
-	// document.querySelector('.game-container').classList.remove('hidden');
+	if (currentSlide !== 3) {
+        event.preventDefault();
+        return;
+    }
 	console.log('Start game button clicked');
     
     const slideshowContainer = document.querySelector('.slideshow-container');
