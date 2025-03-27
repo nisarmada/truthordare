@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!--Stripe-->
+    <script src="https://js.stripe.com/v3/"></script>
     <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-LTJNQRBKE5"></script>
 <script>
@@ -78,7 +80,16 @@
             <a class="prev">❮</a>
             <a class="next">❯</a>
         </div>
-
+        <!--Payment Container-->
+        <div class="payment-container hidden">
+            <h1>Unlock Full game access</h1>
+            <div class="price-option" data-price="9.99">
+                <h3>Basic Access</h3>
+                <p>$9.99 - Lifetime access to all current and new cards</p>
+                <button class="payment-button">Buy Now</button>
+            </div>
+            <button id="already-paid">I've Already Paid</button>
+        </div>
         <!-- Game container (Hidden initially) -->
         <div class="game-container hidden">
             <h1>Truth or Dare</h1>

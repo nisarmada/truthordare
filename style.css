@@ -202,3 +202,79 @@ body {
   .card-flipped {
 	transform: rotateY(180deg);         /* Flip state */
   }
+
+  /* ===== PAYMENT CONTAINER STYLES ===== */
+.payment-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: #FF6B6B;
+    color: white;
+    padding: 20px;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+.payment-container.hidden {
+    display: none;
+}
+
+.payment-content {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 30px;
+    border-radius: 20px;
+    max-width: 80%;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+}
+
+.price-option {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 15px;
+    padding: 20px;
+    margin: 15px 0;
+    transition: all 0.3s ease;
+}
+
+.price-option:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+}
+
+.payment-button {
+    background: #4CAF50;
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 50px;
+    cursor: pointer;
+    font-family: 'Fredoka One';
+    margin-top: 10px;
+    transition: all 0.3s ease;
+}
+
+.payment-button:hover {
+    background: #45a049;
+    transform: translateY(-2px);
+}
+
+#already-paid {
+    background: transparent;
+    border: 2px solid white;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 50px;
+    cursor: pointer;
+    font-family: 'Fredoka One';
+    margin-top: 20px;
+    transition: all 0.3s ease;
+}
+
+#already-paid:hover {
+    background: rgba(255, 255, 255, 0.2);
+}

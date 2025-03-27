@@ -44,6 +44,11 @@ dots.forEach((dot, index) => {
 // 2. GAME INITIALIZATION
 // ======================
 
+//check if user has paid
+function hasPaid() {
+	return localStorage.getItem('hasPaid') == true;
+}
+
 const truths = [
     "What's your biggest fear?",
     "What's a secret you haven't told anyone?",
@@ -96,7 +101,7 @@ document.getElementById('start-game').addEventListener('click', () => {
         event.preventDefault();
         return;
     }
-	console.log('Start game button clicked');
+	// console.log('Start game button clicked');
     
     const slideshowContainer = document.querySelector('.slideshow-container');
     const gameContainer = document.querySelector('.game-container');
@@ -108,8 +113,84 @@ document.getElementById('start-game').addEventListener('click', () => {
     } else {
         console.error('Could not find slideshow or game container');
     }
+	if (hasPaid()) {
+		showGame();
+	}
+	else {
+		showPayment();
+	}
 });
 
+document.getElementById('already-paid')?.addEventListener('click', () => {
+	//only for testing
+	localStorage.setItem('hasPaid', true);
+	showGame();
+})
+
+//Payment buttons
+document.querySelectorAll('.payment-button').forEach(button => {
+	button.addEventListener('click', (event) => {
+		const price = event.target.closest('.price-option').dataset.price;
+		initiatePayment(price);
+	});
+});
+
+function showPayment() {
+	document.querySelector('.slideshow-container').classList.add('hidden');
+	document.querySelector('.payment-container').classList.remove('hidden');
+}
+
+function showGame() {
+	document.querySelector('.slideshow-container').classList.add('hidden');
+    document.querySelector('.payment-container').classList.add('hidden');
+    document.querySelector('.game-container').classList.remove('hidden');
+}
+
+// Stripe payment integration
+function initiatePayment(price) {
+    // Convert to cents for Stripe
+    const amount = Math.round(parseFloat(price) * 100);
+    
+    // Create Stripe checkout session
+    fetch('/create-checkout-session', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            price: amount,
+            product: "Truth or Dare Game Access"
+        }),
+    })
+    .then(response => response.json())
+    .then(session => {
+        // Redirect to Stripe Checkout
+        const stripe = Stripe('pk_test_51R7BwWRtOxWs9089odRiYwE0ibV9kAmoE12SXaIdeRKg57fEPOzUCHC2JCxzOKjjrk0zkRIaAZ9OAiYaHuDH1BhX00bJJwWC04');
+        return stripe.redirectToCheckout({ sessionId: session.id });
+    })
+    .then(result => {
+        if (result.error) {
+            alert(result.error.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
+
+// Check for successful payment return
+function checkPaymentStatus() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const paymentSuccess = urlParams.get('payment_success');
+    
+    if (paymentSuccess === 'true') {
+        localStorage.setItem('hasPaid', 'true');
+        showGame();
+        
+        // Clean up URL
+        window.history.replaceState({}, document.title, window.location.pathname);
+    }
+}
 
 let isFlipping = false; //maybe find better way
 
@@ -161,3 +242,4 @@ function pickCard() {
 
 // Show first slide when page loads
 showSlide(0);
+checkPaymentStatus();
