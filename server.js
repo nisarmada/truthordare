@@ -1,11 +1,13 @@
 require('dotenv').config(); // Loads .env file
+
+const path = require('path');
 const express = require('express');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 // 1. Initialize Express app
 const app = express();
 app.use(express.json());
-app.use(express.static('public')); // Serves your HTML/CSS/JS
+app.use(express.static(path.join(__dirname, 'public'))); // Serves your HTML/CSS/JS
 
 // 2. Stripe Checkout Endpoint
 app.post('/create-checkout-session', async (req, res) => {
