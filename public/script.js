@@ -2,51 +2,37 @@
 // 1. SLIDESHOW FUNCTIONALITY
 // ======================
 
-
 let currentSlide = 0;
 const slides = document.querySelectorAll('.slide');
 const dots = document.querySelectorAll('.dot');
 
 function showSlide(n) {
-	if (n >= slides.length)
-		currentSlide = currentSlide;
-	else if (n < 0)
-		currentSlide = 0;
-	else
-		currentSlide = n;
-	slides.forEach(slide => {
-		slide.classList.remove('active');
-	});
-	//show current slide
-	slides[currentSlide].classList.add('active');
-	//update dots
-	dots.forEach(dot => {
-		dot.classList.remove('active');
-	});
-	dots[currentSlide].classList.add('active');
+    if (n >= slides.length) currentSlide = slides.length - 1;
+    else if (n < 0) currentSlide = 0;
+    else currentSlide = n;
+
+    slides.forEach(slide => slide.classList.remove('active'));
+    slides[currentSlide].classList.add('active');
+    
+    dots.forEach(dot => dot.classList.remove('active'));
+    dots[currentSlide].classList.add('active');
 }
 
-//nextprevious buttons event listeners
-document.querySelector('.next').addEventListener('click', () => {
-	showSlide(currentSlide + 1);
-});
-document.querySelector('.prev').addEventListener('click', () => {
-	showSlide(currentSlide - 1);
-});
+// Navigation controls
+document.querySelector('.next').addEventListener('click', () => showSlide(currentSlide + 1));
+document.querySelector('.prev').addEventListener('click', () => showSlide(currentSlide - 1));
 
 dots.forEach((dot, index) => {
-	dot.addEventListener('click', () => {
-		showSlide(index);
-	});
+    dot.addEventListener('click', () => showSlide(index));
 });
 
 // ======================
 // 2. GAME INITIALIZATION
 // ======================
 
-//check if user has paid
+// Payment status check
 function hasPaid() {
-	return localStorage.getItem('hasPaid') == 'true';
+    return localStorage.getItem('hasPaid') === 'true';
 }
 
 const truths = [
@@ -95,153 +81,134 @@ const dares = [
     "Take a silly photo and set it as your profile picture for an hour!",
 ];
 
-//start game button
-document.getElementById('start-game').addEventListener('click', () => {
-	if (currentSlide !== 3) {
+// Start game button
+document.getElementById('start-game').addEventListener('click', (event) => {
+    if (currentSlide !== 3) {
         event.preventDefault();
         return;
     }
-	// console.log('Start game button clicked');
-	if (hasPaid()) {
-		showGame();
-	}
-	else {
-		showPayment();
-	}
     
-//     const slideshowContainer = document.querySelector('.slideshow-container');
-//     const gameContainer = document.querySelector('.game-container');
-    
-//     if (slideshowContainer && gameContainer) {
-//         console.log('Elements found');
-//         slideshowContainer.classList.add('hidden');
-//         gameContainer.classList.remove('hidden');
-//     } else {
-//         console.error('Could not find slideshow or game container');
-//     }
+    if (hasPaid()) {
+        showGame();
+    } else {
+        showPayment();
+    }
 });
 
+// Test payment bypass
 document.getElementById('already-paid')?.addEventListener('click', () => {
-	//only for testing
-	localStorage.setItem('hasPaid', 'true');
-	showGame();
-})
-
-//Payment buttons
-document.querySelectorAll('.payment-button').forEach(button => {
-	button.addEventListener('click', (event) => {
-		const price = event.target.closest('.price-option').dataset.price;
-		initiatePayment(price);
-	});
+    localStorage.setItem('hasPaid', 'true');
+    showGame();
 });
 
+// Payment buttons
+document.querySelectorAll('.payment-button').forEach(button => {
+    button.addEventListener('click', (event) => {
+        const price = event.target.closest('.price-option').dataset.price;
+        initiatePayment(price);
+    });
+});
+
+// View management
 function showPayment() {
-	document.querySelector('.slideshow-container').classList.add('hidden');
-	document.querySelector('.payment-container').classList.remove('hidden');
+    document.querySelector('.slideshow-container').classList.add('hidden');
+    document.querySelector('.payment-container').classList.remove('hidden');
 }
 
 function showGame() {
-	document.querySelector('.slideshow-container').classList.add('hidden');
+    document.querySelector('.slideshow-container').classList.add('hidden');
     document.querySelector('.payment-container').classList.add('hidden');
     document.querySelector('.game-container').classList.remove('hidden');
 }
 
-// Stripe payment integration
-function initiatePayment(price) {
-    console.log('Initiating payment with price:', price);
-    const amount = Math.round(parseFloat(price) * 100);
-    console.log('Calculated amount:', amount);
-    
-    fetch('/.netlify/functions/stripe', {  
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        price: amount,
-        product: "Truth or Dare Game Access"
-      }),
-    })
-    .then(response => {
-        console.log('Response status:', response.status);
-        return response.json();
-    })
-    .then(session => {
-        console.log('Stripe session received:', session);
-        if (session.error) {
-            console.error('Session creation error:', session.error);
-            throw new Error(session.error);
+// ======================
+// 3. STRIPE PAYMENT INTEGRATION
+// ======================
+
+async function initiatePayment(price) {
+    try {
+        const amount = Math.round(parseFloat(price) * 100);
+        
+        const response = await fetch('/.netlify/functions/stripe', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                price: amount,
+                product: "Truth or Dare Game Access"
+            }),
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
+
+        const session = await response.json();
+        
+        if (!session || !session.id) {
+            throw new Error('Invalid session response from server');
+        }
+
         const stripe = Stripe('pk_test_51R7BwWRtOxWs9089odRiYwE0ibV9kAmoE12SXaIdeRKg57fEPOzUCHC2JCxzOKjjrk0zkRIaAZ9OAiYaHuDH1BhX00bJJwWC04');
-        return stripe.redirectToCheckout({ sessionId: session.id });
-    })
-    .catch(error => {
-      console.error('Full payment error:', error);
-      console.error('Error details:', JSON.stringify(error, Object.getOwnPropertyNames(error)));
-      alert("Payment failed. Please check console for details.");
-    });
+        const { error } = await stripe.redirectToCheckout({ sessionId: session.id });
+
+        if (error) {
+            throw error;
+        }
+    } catch (error) {
+        console.error('Payment error:', error);
+        alert(`Payment failed: ${error.message}`);
+    }
 }
 
-// Check for successful payment return
+// Check payment status on page load
 function checkPaymentStatus() {
     const urlParams = new URLSearchParams(window.location.search);
-    const paymentSuccess = urlParams.get('payment_success');
-    
-    if (paymentSuccess === 'true') {
+    if (urlParams.get('payment_success') === 'true') {
         localStorage.setItem('hasPaid', 'true');
         showGame();
-        
-        // Clean up URL
         window.history.replaceState({}, document.title, window.location.pathname);
     }
 }
 
-let isFlipping = false; //maybe find better way
+// ======================
+// 4. CARD GAME LOGIC
+// ======================
+
+let isFlipping = false;
 
 function pickCard() {
-	if (isFlipping)
-			return;
-	isFlipping = true;
+    if (isFlipping) return;
+    isFlipping = true;
 
-	const card = document.getElementById('card');
-	const frontResult = document.getElementById('front-result');
+    const card = document.getElementById('card');
+    const frontResult = document.getElementById('front-result');
     const backResult = document.getElementById('back-result');
 
-	//dont do anything if card is flipped
-	if (card.classList.contains('card-flipped')){
-		card.classList.remove('card-flipped');
-		setTimeout(() => {
-			frontResult.innerText = "Draw a Card"
-		}, 300);
-	}
-	else
-	{
-		setTimeout(() => {
-			let randomChoice = Math.random();
-			let chosenArray;
-		
-			if (randomChoice < 0.5)
-					chosenArray = truths;
-			else
-				chosenArray = dares;
-			let randomCard = chosenArray[Math.floor(Math.random() * chosenArray.length)];	
-			
-			//update the text
-			frontResult.innerText = randomCard;
-			backResult.innerText = randomCard;
-		}, 300);
-		card.classList.add('card-flipped');
-	}
-	
-	setTimeout(() => {
-		isFlipping = false;
-	}, 300);
-
-	// document.getElementById("result").innerText = randomCard;
+    if (card.classList.contains('card-flipped')) {
+        card.classList.remove('card-flipped');
+        setTimeout(() => {
+            frontResult.textContent = "Draw a Card";
+            isFlipping = false;
+        }, 300);
+    } else {
+        setTimeout(() => {
+            const randomChoice = Math.random();
+            const chosenArray = randomChoice < 0.5 ? truths : dares;
+            const randomCard = chosenArray[Math.floor(Math.random() * chosenArray.length)];
+            
+            frontResult.textContent = randomCard;
+            backResult.textContent = randomCard;
+            isFlipping = false;
+        }, 300);
+        card.classList.add('card-flipped');
+    }
 }
 
 // ======================
-// 4. INITIAL SETUP
+// 5. INITIALIZATION
 // ======================
 
-// Show first slide when page loads
-showSlide(0);
-checkPaymentStatus();
+document.addEventListener('DOMContentLoaded', () => {
+    showSlide(0);
+    checkPaymentStatus();
+});
