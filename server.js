@@ -1,7 +1,7 @@
 require('dotenv').config(); // Loads .env file
 
-const path = require('path');
 const express = require('express');
+const path = require('path');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 // 1. Initialize Express app
