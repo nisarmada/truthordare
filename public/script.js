@@ -148,35 +148,27 @@ function showGame() {
 
 // Stripe payment integration
 function initiatePayment(price) {
-    // Convert to cents for Stripe
-    const amount = Math.round(parseFloat(price) * 100);
-    
-    // Create Stripe checkout session
-    fetch('/create-checkout-session', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            price: amount,
-            product: "Truth or Dare Game Access"
-        }),
-    })
-    .then(response => response.json())
-    .then(session => {
-        // Redirect to Stripe Checkout
-        const stripe = Stripe('pk_test_51R7BwWRtOxWs9089odRiYwE0ibV9kAmoE12SXaIdeRKg57fEPOzUCHC2JCxzOKjjrk0zkRIaAZ9OAiYaHuDH1BhX00bJJwWC04');
-        return stripe.redirectToCheckout({ sessionId: session.id });
-    })
-    .then(result => {
-        if (result.error) {
-            alert(result.error.message);
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-    });
-}
+	const amount = Math.round(parseFloat(price) * 100);
+	
+	// Key change: Updated endpoint to Netlify Function
+	fetch('/.netlify/functions/stripe', {  // 👈 Updated URL
+	  method: 'POST',
+	  headers: { 'Content-Type': 'application/json' },
+	  body: JSON.stringify({
+		price: amount,
+		product: "Truth or Dare Game Access"
+	  }),
+	})
+	.then(response => response.json())
+	.then(session => {
+	  const stripe = Stripe('pk_test_51R7BwWRtOxWs9089odRiYwE0ibV9kAmoE12SXaIdeRKg57fEPOzUCHC2JCxzOKjjrk0zkRIaAZ9OAiYaHuDH1BhX00bJJwWC04');
+	  return stripe.redirectToCheckout({ sessionId: session.id });
+	})
+	.catch(error => {
+	  console.error('Error:', error);
+	  alert("Payment failed. Please try again.");
+	});
+  }
 
 // Check for successful payment return
 function checkPaymentStatus() {
