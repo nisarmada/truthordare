@@ -148,27 +148,37 @@ function showGame() {
 
 // Stripe payment integration
 function initiatePayment(price) {
-	const amount = Math.round(parseFloat(price) * 100);
-	
-	// Key change: Updated endpoint to Netlify Function
-	fetch('/.netlify/functions/stripe', {  // 👈 Updated URL
-	  method: 'POST',
-	  headers: { 'Content-Type': 'application/json' },
-	  body: JSON.stringify({
-		price: amount,
-		product: "Truth or Dare Game Access"
-	  }),
-	})
-	.then(response => response.json())
-	.then(session => {
-	  const stripe = Stripe('pk_test_51R7BwWRtOxWs9089odRiYwE0ibV9kAmoE12SXaIdeRKg57fEPOzUCHC2JCxzOKjjrk0zkRIaAZ9OAiYaHuDH1BhX00bJJwWC04');
-	  return stripe.redirectToCheckout({ sessionId: session.id });
-	})
-	.catch(error => {
-	  console.error('Error:', error);
-	  alert("Payment failed. Please try again.");
-	});
-  }
+    console.log('Initiating payment with price:', price);
+    const amount = Math.round(parseFloat(price) * 100);
+    console.log('Calculated amount:', amount);
+    
+    fetch('/.netlify/functions/stripe', {  
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        price: amount,
+        product: "Truth or Dare Game Access"
+      }),
+    })
+    .then(response => {
+        console.log('Response status:', response.status);
+        return response.json();
+    })
+    .then(session => {
+        console.log('Stripe session received:', session);
+        if (session.error) {
+            console.error('Session creation error:', session.error);
+            throw new Error(session.error);
+        }
+        const stripe = Stripe('pk_test_51R7BwWRtOxWs9089odRiYwE0ibV9kAmoE12SXaIdeRKg57fEPOzUCHC2JCxzOKjjrk0zkRIaAZ9OAiYaHuDH1BhX00bJJwWC04');
+        return stripe.redirectToCheckout({ sessionId: session.id });
+    })
+    .catch(error => {
+      console.error('Full payment error:', error);
+      console.error('Error details:', JSON.stringify(error, Object.getOwnPropertyNames(error)));
+      alert("Payment failed. Please check console for details.");
+    });
+}
 
 // Check for successful payment return
 function checkPaymentStatus() {
