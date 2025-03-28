@@ -2,41 +2,72 @@
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 exports.handler = async (event) => {
-  // 1. Parse incoming data (if needed)
-  const { price, product } = JSON.parse(event.body || '{}');
+  // Validate that it's a POST request
+  if (event.httpMethod !== 'POST') {
+    return {
+      statusCode: 405,
+      body: JSON.stringify({ error: 'Method Not Allowed' })
+    };
+  }
+
+  // Parse incoming data
+  let parsedBody;
+  try {
+    parsedBody = JSON.parse(event.body || '{}');
+  } catch (error) {
+    return {
+      statusCode: 400,
+      body: JSON.stringify({ error: 'Invalid JSON' })
+    };
+  }
+
+  const { price, product } = parsedBody;
+
+  // Validate price
+  if (!price || isNaN(price)) {
+    return {
+      statusCode: 400,
+      body: JSON.stringify({ error: 'Invalid price' })
+    };
+  }
 
   try {
-    // 2. Create Stripe session
+    // Create Stripe session with dynamic price
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: [{
-        price: 'price_1R7fS2RtOxWs9089ytr5qhPy', // Your Stripe Price ID
+        price_data: {
+          currency: 'usd',
+          unit_amount: price, // Use the passed price
+          product_data: {
+            name: product || "Truth or Dare Game Access"
+          }
+        },
         quantity: 1,
       }],
       mode: 'payment',
       success_url: `${event.headers.origin}/?payment_success=true`,
       cancel_url: `${event.headers.origin}/?payment_cancelled=true`,
-      // Optional metadata
       metadata: {
         product_name: product || "Truth or Dare Game Access"
       }
     });
 
-    // 3. Return success response
+    // Return success response
     return {
       statusCode: 200,
       headers: {
-        'Access-Control-Allow-Origin': '*', // Enable CORS
+        'Access-Control-Allow-Origin': '*',
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({ 
         id: session.id,
-        url: session.url // Optional: Direct checkout URL
+        url: session.url
       })
     };
 
   } catch (e) {
-    // 4. Error handling
+    console.error('Stripe session creation error:', e);
     return {
       statusCode: 500,
       headers: { 'Content-Type': 'application/json' },
