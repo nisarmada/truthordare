@@ -1,12 +1,9 @@
 [build]
-  command = "npm install"       # No build step needed for your setup
-  publish = "public"           # Your static files directory
+  command = "npm install"
+  publish = "public"
+  functions = "netlify/functions"
 
 [[redirects]]
   from = "/*"
   to = "/index.html"
-  status = 200                 # SPA fallback for all routes
-
-[functions]
-  directory = "netlify/functions"  # Correct functions location
-  node_bundler = "esbuild"     # Recommended for faster builds
+  status = 200
