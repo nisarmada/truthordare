@@ -102,28 +102,28 @@ document.getElementById('start-game').addEventListener('click', () => {
         return;
     }
 	// console.log('Start game button clicked');
-    
-    const slideshowContainer = document.querySelector('.slideshow-container');
-    const gameContainer = document.querySelector('.game-container');
-    
-    if (slideshowContainer && gameContainer) {
-        console.log('Elements found');
-        slideshowContainer.classList.add('hidden');
-        gameContainer.classList.remove('hidden');
-    } else {
-        console.error('Could not find slideshow or game container');
-    }
 	if (hasPaid()) {
 		showGame();
 	}
 	else {
 		showPayment();
 	}
+    
+//     const slideshowContainer = document.querySelector('.slideshow-container');
+//     const gameContainer = document.querySelector('.game-container');
+    
+//     if (slideshowContainer && gameContainer) {
+//         console.log('Elements found');
+//         slideshowContainer.classList.add('hidden');
+//         gameContainer.classList.remove('hidden');
+//     } else {
+//         console.error('Could not find slideshow or game container');
+//     }
 });
 
 document.getElementById('already-paid')?.addEventListener('click', () => {
 	//only for testing
-	localStorage.setItem('hasPaid', true);
+	localStorage.setItem('hasPaid', 'true');
 	showGame();
 })
 
@@ -184,7 +184,7 @@ function checkPaymentStatus() {
     const paymentSuccess = urlParams.get('payment_success');
     
     if (paymentSuccess === 'true') {
-        localStorage.setItem('hasPaid', 'true');
+        localStorage.setItem('hasPaid') == true;
         showGame();
         
         // Clean up URL
