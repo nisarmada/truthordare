@@ -1,3 +1,4 @@
+require('dotenv').config(); // Loads .env file
 const express = require('express');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
@@ -12,12 +13,8 @@ app.post('/create-checkout-session', async (req, res) => {
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'], // Accept credit cards
       line_items: [{
-        price_data: {
-          currency: 'usd', // Charges in USD
-          product_data: { name: req.body.product }, // From frontend
-          unit_amount: req.body.price, // Price in cents (e.g., 999 = $9.99)
-        },
-        quantity: 1,
+        price: 'price_1R7fS2RtOxWs9089ytr5qhPy',
+		quantity: 1,
       }],
       mode: 'payment', // One-time payment
       success_url: `${req.headers.origin}/?payment_success=true`, // Redirect after success
@@ -26,6 +23,7 @@ app.post('/create-checkout-session', async (req, res) => {
 
     res.json({ id: session.id }); // Send session ID to frontend
   } catch (e) {
+	console.error('Stripe Error:', e);
     res.status(500).json({ error: e.message }); // Handle errors
   }
 });

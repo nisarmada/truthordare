@@ -46,7 +46,7 @@ dots.forEach((dot, index) => {
 
 //check if user has paid
 function hasPaid() {
-	return localStorage.getItem('hasPaid') == true;
+	return localStorage.getItem('hasPaid') == 'true';
 }
 
 const truths = [
@@ -184,7 +184,7 @@ function checkPaymentStatus() {
     const paymentSuccess = urlParams.get('payment_success');
     
     if (paymentSuccess === 'true') {
-        localStorage.setItem('hasPaid') == true;
+        localStorage.setItem('hasPaid', 'true');
         showGame();
         
         // Clean up URL
